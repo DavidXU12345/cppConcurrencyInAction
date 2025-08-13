@@ -46,10 +46,3 @@ T parallel_accumulate(Iterator first,Iterator last,T init)
     return std::accumulate(results.begin(),results.end(),init);
 }
 
-int main()
-{
-    std::vector<int> v(1000000,1);
-    int result=parallel_accumulate(v.begin(),v.end(),0);
-    std::cout<<"Result: "<<result<<std::endl;
-    return 0;
-}
