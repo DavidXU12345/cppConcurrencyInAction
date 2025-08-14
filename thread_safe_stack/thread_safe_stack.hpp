@@ -29,14 +29,24 @@ public:
         std::lock_guard<std::mutex> lock(m);
         data.push(value);
     }
-    std::shared_ptr<T> pop()
+    std::shared_ptr<T> pop() 
     {
         std::lock_guard<std::mutex> lock(m);
         if(data.empty()) throw empty_stack();
-        std::shared_ptr<T> const res(std::make_shared<T>(data.top()));
-        data.pop();
-        return res;
+        std::shared_ptr<T> const res(std::make_shared<T>(data.top()));  // Copy happens here
+        data.pop();  // Only remove after successful copy
+        return res;  // shared_ptr copy/move is noexcept
     }
+    // Dangerous - what if this throws?
+    /*
+    T pop() {
+        if (empty()) throw empty_stack();
+        T result = data.top();  // What if T's copy constructor throws here?
+        data.pop();             // The element is already removed!
+        return result;          // Exception thrown, element is lost forever!
+    }
+    */
+
     void pop(T& value)
     {
         std::lock_guard<std::mutex> lock(m);
